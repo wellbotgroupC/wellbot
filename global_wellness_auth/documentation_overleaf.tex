@@ -1,0 +1,1936 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{url}
+\usepackage{float}
+
+% Page setup
+\geometry{margin=1in}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Global Wellness Assistant Documentation}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Code listing configuration
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    tabsize=2,
+    language=Python,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    captionpos=b,
+    escapeinside={(*@}{@*)}
+}
+
+% Colors
+\definecolor{codeblue}{RGB}{0,102,204}
+\definecolor{codegreen}{RGB}{0,153,76}
+\definecolor{codered}{RGB}{204,0,0}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Global Wellness Assistant Documentation},
+    pdfauthor={Global Wellness Team},
+    pdfsubject={Health Chatbot System Documentation}
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge\bfseries Global Wellness Assistant}\\[0.5cm]
+{\Large A Multilingual Health Chatbot System}\\[0.5cm]
+{\large with Admin Dashboard \& Analytics}\\[2cm]
+
+{\large\bfseries Technical Documentation}\\[1cm]
+
+{\large Modules 1-4: Complete System Overview}\\[3cm]
+
+\begin{minipage}{0.8\textwidth}
+\centering
+{\large
+Global Wellness Team\\
+Health Technology Division\\
+\vspace{1cm}
+Version 1.0\\
+November 2024
+}
+\end{minipage}
+
+\vfill
+\end{titlepage}
+
+% Table of Contents
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% Abstract
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This document provides comprehensive technical documentation for the Global Wellness Assistant, a multilingual health chatbot system developed in four progressive modules. The system integrates Flask-based web authentication, Rasa-powered conversational AI, a structured health knowledge base with English and Hindi support, and an administrative dashboard for system management. Module 1 establishes secure user authentication and profile management using JWT tokens. Module 2 implements the core conversational AI engine with Rasa 3.x for natural language understanding and dialogue management. Module 3 expands the health knowledge base with structured symptom advice, multilingual support, and enhanced NLU capabilities. Module 4 adds administrative functionality including conversation logging, user feedback collection, knowledge base management, and analytics visualization. The system demonstrates a production-ready architecture with proper security, error handling, and scalability considerations.
+
+\section{Introduction}
+
+The Global Wellness Assistant is a comprehensive health and wellness chatbot system designed to provide accessible, multilingual health information to users. The system addresses the need for immediate, reliable health guidance while maintaining clear disclaimers about its informational nature. Developed in four progressive modules, the system integrates modern web technologies with advanced conversational AI to deliver a seamless user experience.
+
+The architecture follows a modular design pattern, with clear separation between authentication, conversation management, knowledge base services, and administrative functions. The system supports both English and Hindi languages, making it accessible to a broader user base. Key features include secure user authentication, intelligent symptom recognition, structured health advice, conversation logging, and comprehensive administrative tools.
+
+\subsection{System Objectives}
+
+\begin{itemize}
+    \item Provide accessible health information in multiple languages
+    \item Ensure secure user authentication and data protection
+    \item Deliver intelligent, context-aware responses to health queries
+    \item Enable administrative oversight and system management
+    \item Maintain clear medical disclaimers and safety guidelines
+\end{itemize}
+
+\subsection{Document Structure}
+
+This document is organized as follows:
+\begin{itemize}
+    \item Section 2: System Architecture Overview
+    \item Section 3: Module 1 - User Authentication \& Profile Management
+    \item Section 4: Module 2 - Conversational AI Core
+    \item Section 5: Module 3 - Health Knowledge Base Expansion
+    \item Section 6: Module 4 - Admin Dashboard \& System Refinement
+    \item Section 7: System Integration \& Workflows
+    \item Section 8: Testing \& Quality Assurance
+    \item Section 9: Deployment \& Security
+    \item Section 10: Future Enhancements
+\end{itemize}
+
+\section{System Architecture}
+
+\subsection{Overview}
+
+The Global Wellness Assistant follows a microservices-inspired architecture with clear separation of concerns. The system consists of multiple interconnected components that communicate via RESTful APIs.
+
+\subsection{Architecture Components}
+
+\begin{enumerate}
+    \item \textbf{Flask Web Application}: Main web framework handling HTTP requests, authentication, UI rendering, and business logic
+    \item \textbf{Rasa Server}: Conversational AI engine for natural language understanding and dialogue management
+    \item \textbf{Rasa Actions Server}: Custom action server for knowledge base lookups and dynamic response generation
+    \item \textbf{SQLite Database}: User data, conversation logs, and feedback storage (development); PostgreSQL recommended for production
+    \item \textbf{Knowledge Base (JSON)}: Structured health information in English and Hindi
+    \item \textbf{Static Assets}: CSS, JavaScript, and other frontend resources
+\end{enumerate}
+
+\subsection{Communication Flow}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+┌─────────────┐
+│   Browser   │
+└──────┬──────┘
+       │ HTTP/HTTPS
+       ▼
+┌─────────────────┐
+│  Flask Server   │
+│  (Port 5000)    │
+└──────┬──────────┘
+       │ REST API
+       ▼
+┌─────────────────┐      ┌──────────────────┐
+│  Rasa Server    │◄────►│ Rasa Actions     │
+│  (Port 5005)    │      │ Server (Port 5055)│
+└─────────────────┘      └──────────────────┘
+       │
+       ▼
+┌─────────────────┐
+│  SQLite DB      │
+│  (wellness.db)  │
+└─────────────────┘
+\end{verbatim}
+\caption{System Architecture Diagram}
+\end{figure}
+
+\subsection{Technology Stack}
+
+\begin{table}[H]
+\centering
+\caption{Complete Technology Stack}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Component} & \textbf{Technology} \\
+\hline
+Web Framework & Flask 3.0+ \\
+ORM & SQLAlchemy (Flask-SQLAlchemy) \\
+Authentication & JWT (flask-jwt-extended) \\
+Database & SQLite (dev), PostgreSQL (prod) \\
+Conversational AI & Rasa 3.6.15 \\
+Frontend & Bootstrap 5, Vanilla JavaScript \\
+Charts & Chart.js \\
+Testing & pytest \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Module 1: User Authentication \& Profile Management}
+
+\subsection{Overview}
+
+Module 1 establishes the foundation for user management, providing secure authentication, registration, and profile management capabilities. This module implements industry-standard security practices including password hashing and JWT-based authentication.
+
+\subsection{Features}
+
+The authentication module provides:
+\begin{itemize}
+    \item User registration with email validation and password strength requirements
+    \item Secure login/logout with JWT tokens
+    \item Session management via token storage in localStorage
+    \item Profile management with language preferences (English/Hindi)
+    \item Age group tracking for personalized experiences
+    \item RESTful API endpoints for programmatic access
+    \item Clean, responsive web UI using Bootstrap 5
+\end{itemize}
+
+\subsection{Data Model}
+
+\subsubsection{User Model Schema}
+
+\begin{lstlisting}[language=Python, caption=User Model Definition]
+class User(db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False, 
+                      index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=True)
+    age_group = db.Column(db.String(20), nullable=True)
+    preferred_language = db.Column(db.String(2), default='en', 
+                                   nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, 
+                          nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, 
+                          onupdate=datetime.utcnow, nullable=False)
+    
+    def set_password(self, password):
+        """Hash and set password"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Verify password"""
+        return check_password_hash(self.password_hash, password)
+    
+    def to_dict(self):
+        """Serialize user to dictionary"""
+        return {
+            'id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'age_group': self.age_group,
+            'preferred_language': self.preferred_language,
+            'is_admin': self.is_admin,
+            'created_at': self.created_at.isoformat() 
+                         if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() 
+                         if self.updated_at else None
+        }
+\end{lstlisting}
+
+\subsection{API Endpoints}
+
+\subsubsection{Authentication Endpoints}
+
+\textbf{POST /auth/api/register}
+\begin{itemize}
+    \item \textbf{Purpose}: Register a new user account
+    \item \textbf{Request Body}:
+    \begin{lstlisting}[language=JSON]
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "confirm_password": "password123",
+  "name": "John Doe",
+  "age_group": "26-35",
+  "preferred_language": "en"
+}
+    \end{lstlisting}
+    \item \textbf{Response (201)}:
+    \begin{lstlisting}[language=JSON]
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "preferred_language": "en"
+  }
+}
+    \end{lstlisting}
+    \item \textbf{Validation}: Email format, password match, age group values, language codes
+\end{itemize}
+
+\textbf{POST /auth/api/login}
+\begin{itemize}
+    \item \textbf{Purpose}: Authenticate user and obtain JWT token
+    \item \textbf{Request Body}:
+    \begin{lstlisting}[language=JSON]
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+    \end{lstlisting}
+    \item \textbf{Response (200)}:
+    \begin{lstlisting}[language=JSON]
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe",
+    "age_group": "26-35",
+    "preferred_language": "en"
+  }
+}
+    \end{lstlisting}
+    \item \textbf{Token Expiration}: Configurable (default: 24 hours)
+\end{itemize}
+
+\textbf{POST /auth/api/logout}
+\begin{itemize}
+    \item \textbf{Purpose}: Logout current user
+    \item \textbf{Headers}: Authorization: Bearer <token>
+    \item \textbf{Response (200)}: \texttt{\{"message": "Logged out successfully"\}}
+\end{itemize}
+
+\textbf{GET /auth/api/me}
+\begin{itemize}
+    \item \textbf{Purpose}: Get current authenticated user's profile
+    \item \textbf{Headers}: Authorization: Bearer <token>
+    \item \textbf{Response (200)}: User profile object
+\end{itemize}
+
+\subsubsection{Profile Endpoints}
+
+\textbf{GET /profile/api/me}
+\begin{itemize}
+    \item Same as \texttt{/auth/api/me}
+\end{itemize}
+
+\textbf{PUT /profile/api/me}
+\begin{itemize}
+    \item \textbf{Purpose}: Update user profile
+    \item \textbf{Request Body}:
+    \begin{lstlisting}[language=JSON]
+{
+  "name": "Jane Doe",
+  "age_group": "36-50",
+  "preferred_language": "hi"
+}
+    \end{lstlisting}
+    \item \textbf{Response (200)}: Updated user profile
+\end{itemize}
+
+\subsection{Security Implementation}
+
+\subsubsection{Password Security}
+
+\begin{itemize}
+    \item Passwords are hashed using Werkzeug's \texttt{generate\_password\_hash()}
+    \item Uses PBKDF2 with SHA-256 and salt
+    \item Minimum password length: 8 characters
+    \item Passwords are never stored in plain text
+    \item Password verification uses constant-time comparison
+\end{itemize}
+
+\subsubsection{JWT Token Security}
+
+\begin{itemize}
+    \item Tokens signed with HMAC-SHA256
+    \item Configurable expiration time
+    \item Token stored in localStorage (consider httpOnly cookies for production)
+    \item Token included in Authorization header for protected routes
+    \item \texttt{@jwt\_required()} decorator protects routes
+\end{itemize}
+
+\subsubsection{Input Validation}
+
+\begin{itemize}
+    \item Email format validation using regex
+    \item Password strength requirements
+    \item Age group validation (must be: "18-25", "26-35", "36-50", "50+")
+    \item Language code validation (must be: "en" or "hi")
+    \item SQL injection prevention via SQLAlchemy ORM
+\end{itemize}
+
+\subsection{Project Structure}
+
+\begin{verbatim}
+global_wellness_auth/
+├── app.py                 # Flask application factory
+├── config.py              # Configuration settings
+├── extensions.py          # Flask extensions (db, jwt)
+├── models.py              # Database models
+├── auth/
+│   ├── __init__.py
+│   ├── routes.py          # Authentication routes
+│   └── validators.py      # Validation utilities
+├── profile/
+│   ├── __init__.py
+│   └── routes.py          # Profile routes
+├── templates/
+│   ├── base.html          # Base template
+│   ├── auth/
+│   │   ├── register.html  # Registration page
+│   │   └── login.html     # Login page
+│   └── profile/
+│       └── profile.html   # Profile page
+└── static/
+    └── css/
+        └── style.css      # Custom styles
+\end{verbatim}
+
+\section{Module 2: Conversational AI Core}
+
+\subsection{Overview}
+
+Module 2 integrates Rasa 3.x conversational AI framework to provide natural language understanding and dialogue management capabilities. The chatbot can handle health-related queries including symptom assessment, first aid advice, and wellness tips through natural language interaction.
+
+\subsection{Features}
+
+\begin{itemize}
+    \item Natural Language Understanding (NLU) for health-related intents
+    \item Dialogue management for multi-turn conversations
+    \item Health knowledge base integration
+    \item Web chat interface with real-time messaging
+    \item RESTful integration between Flask and Rasa
+    \item Graceful error handling and fallback responses
+    \item Session management for conversation continuity
+\end{itemize}
+
+\subsection{Rasa Configuration}
+
+\subsubsection{Intents}
+
+The system recognizes the following intents:
+
+\begin{table}[H]
+\centering
+\caption{Rasa Intents}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Intent} & \textbf{Description} \\
+\hline
+\texttt{greet} & Greeting messages \\
+\texttt{goodbye} & Farewell messages \\
+\texttt{ask\_about\_symptom} & Symptom queries \\
+\texttt{query\_first\_aid} & First aid questions \\
+\texttt{ask\_about\_wellness\_tip} & Wellness advice requests \\
+\texttt{thank} & Thank you messages \\
+\texttt{fallback} & Unrecognized inputs \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Entities}
+
+The NLU pipeline extracts the following entities:
+
+\begin{itemize}
+    \item \texttt{symptom}: Health symptoms (e.g., headache, fever, cold)
+    \item \texttt{body\_part}: Body parts (e.g., head, stomach, arms)
+    \item \texttt{ailment}: Medical conditions
+    \item \texttt{severity}: Symptom severity (mild, moderate, severe)
+    \item \texttt{duration}: How long symptoms have lasted
+    \item \texttt{language}: Language preference (en, hi)
+\end{itemize}
+
+\subsubsection{NLU Pipeline Configuration}
+
+\begin{lstlisting}[language=YAML, caption=Rasa NLU Pipeline]
+version: "3.1"
+
+recipe: default.v1
+
+language: en
+
+pipeline:
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer
+  - name: LexicalSyntacticFeaturizer
+  - name: CountVectorsFeaturizer
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+    learning_rate: 0.0003
+    weight_sparsity: 0.0
+  - name: EntitySynonymMapper
+  - name: ResponseSelector
+    epochs: 50
+    constrain_similarities: true
+  - name: FallbackClassifier
+    threshold: 0.4
+    ambiguity_threshold: 0.1
+\end{lstlisting}
+
+\subsubsection{Dialogue Policies}
+
+\begin{lstlisting}[language=YAML, caption=Rasa Dialogue Policies]
+policies:
+  - name: MemoizationPolicy
+  - name: RulePolicy
+  - name: TEDPolicy
+    max_history: 5
+    epochs: 50
+    constrain_similarities: true
+\end{lstlisting}
+
+\subsection{Flask-Rasa Integration}
+
+\subsubsection{Rasa Client Implementation}
+
+\begin{lstlisting}[language=Python, caption=RasaClient Class]
+class RasaClient:
+    """Client for interacting with Rasa REST API."""
+    
+    def __init__(self, base_url="http://localhost:5005", timeout=10):
+        self.base_url = base_url.rstrip('/')
+        self.timeout = timeout
+        self.webhook_url = f"{self.base_url}/webhooks/rest/webhook"
+    
+    def send_message(self, sender_id: str, message: str, 
+                     preferred_language: str = "en", 
+                     metadata: Optional[Dict] = None) -> List[Dict]:
+        """Send message to Rasa with language metadata."""
+        if not message or not message.strip():
+            raise RasaClientError("Message cannot be empty")
+        
+        # Ensure preferred_language is valid
+        if preferred_language not in ("en", "hi"):
+            preferred_language = "en"
+        
+        # Build metadata
+        final_metadata = {"preferred_language": preferred_language}
+        if metadata:
+            final_metadata.update(metadata)
+            final_metadata["preferred_language"] = preferred_language
+        
+        payload = {
+            "sender": sender_id,
+            "message": message.strip(),
+            "metadata": final_metadata
+        }
+        
+        try:
+            response = requests.post(
+                self.webhook_url,
+                json=payload,
+                timeout=self.timeout,
+                headers={"Content-Type": "application/json"}
+            )
+            response.raise_for_status()
+            return self._parse_response(response)
+        except requests.exceptions.Timeout:
+            raise RasaClientError("Rasa server timeout")
+        except requests.exceptions.ConnectionError:
+            raise RasaClientError("Cannot connect to Rasa server")
+\end{lstlisting}
+
+\subsection{API Endpoints}
+
+\subsubsection{Chat Interface}
+
+\textbf{GET /conversation/chat}
+\begin{itemize}
+    \item Renders the chat interface page
+    \item Includes JavaScript for real-time messaging
+    \item Session management via localStorage
+\end{itemize}
+
+\subsubsection{Message API}
+
+\textbf{POST /conversation/api/message}
+\begin{itemize}
+    \item \textbf{Request Body}:
+    \begin{lstlisting}[language=JSON]
+{
+  "message": "I have a headache, what should I do?",
+  "session_id": "optional-uuid"
+}
+    \end{lstlisting}
+    \item \textbf{Response (200)}:
+    \begin{lstlisting}[language=JSON]
+{
+  "session_id": "generated-or-provided-uuid",
+  "messages": [
+    {
+      "type": "text",
+      "text": "For a headache, try these steps..."
+    }
+  ],
+  "logged": true
+}
+    \end{lstlisting}
+    \item \textbf{Error Handling}: Returns graceful fallback message if Rasa unavailable
+\end{itemize}
+
+\subsection{Error Handling}
+
+The system implements comprehensive error handling:
+
+\begin{itemize}
+    \item \textbf{Connection Errors}: Returns user-friendly message when Rasa server is unavailable
+    \item \textbf{Timeout Handling}: 10-second timeout for Rasa requests
+    \item \textbf{Invalid Responses}: Validates Rasa response format
+    \item \textbf{Logging}: Logs all errors for debugging
+    \item \textbf{Fallback Messages}: Provides helpful guidance even when AI is unavailable
+\end{itemize}
+
+\section{Module 3: Health Knowledge Base Expansion \& Advanced NLP}
+
+\subsection{Overview}
+
+Module 3 significantly enhances the system's capabilities by expanding the health knowledge base with structured, multilingual content and improving natural language understanding through enriched training data and advanced NLU features.
+
+\subsection{Knowledge Base Structure}
+
+\subsubsection{Entry Schema}
+
+Each knowledge base entry follows this structure:
+
+\begin{lstlisting}[language=JSON, caption=Knowledge Base Entry Example]
+{
+  "headache": {
+    "category": "symptom",
+    "common_causes": [
+      "tension or stress",
+      "mild dehydration",
+      "eye strain",
+      "lack of sleep",
+      "caffeine withdrawal"
+    ],
+    "self_care": [
+      "Rest in a quiet, dark room",
+      "Drink water to stay hydrated",
+      "Avoid screen time for a while",
+      "Practice gentle neck and shoulder stretches",
+      "Apply a cold or warm compress to your forehead",
+      "Consider over-the-counter pain relief if appropriate"
+    ],
+    "red_flags": [
+      "sudden, severe headache",
+      "headache after head injury",
+      "confusion, trouble speaking, or vision changes",
+      "neck stiffness with fever",
+      "headache that wakes you from sleep",
+      "persistent headache that doesn't improve"
+    ],
+    "disclaimer": "This is general wellness information...",
+    "hi": {
+      "self_care": [
+        "शांत और अंधेरे कमरे में आराम करें",
+        "हाइड्रेटेड रहने के लिए पर्याप्त पानी पिएँ"
+      ],
+      "red_flags": [
+        "अचानक, गंभीर सिरदर्द",
+        "सिर की चोट के बाद सिरदर्द"
+      ],
+      "disclaimer": "यह केवल सामान्य जानकारी है..."
+    }
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Supported Symptoms}
+
+The knowledge base includes entries for:
+\begin{itemize}
+    \item headache
+    \item fever
+    \item cold
+    \item sore\_throat
+    \item cough
+    \item stomach\_pain
+    \item nausea
+    \item muscle\_pain
+    \item burn (first aid)
+    \item cut (first aid)
+\end{itemize}
+
+\subsection{Knowledge Base Service}
+
+\subsubsection{HealthKB Class}
+
+\begin{lstlisting}[language=Python, caption=HealthKB Service Implementation]
+class HealthKB:
+    """Health Knowledge Base helper for accessing structured health information."""
+    
+    def __init__(self, kb_path: Optional[str] = None):
+        if kb_path is None:
+            kb_path = os.path.join(
+                os.path.dirname(__file__),
+                'health_kb.json'
+            )
+        self.kb_path = Path(kb_path)
+        self._data = self._load_kb()
+    
+    def _load_kb(self) -> Dict[str, Any]:
+        """Load knowledge base from JSON file."""
+        try:
+            with open(self.kb_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            logger.error(f"KB file not found: {self.kb_path}")
+            return {}
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in KB file: {e}")
+            return {}
+    
+    def get_entry(self, key: str) -> Optional[Dict[str, Any]]:
+        """Get raw entry from KB."""
+        key = key.lower().strip()
+        return self._data.get(key)
+    
+    def get_advice(self, key: str, language: str = "en") -> Optional[Dict]:
+        """Get structured advice in specified language."""
+        entry = self.get_entry(key)
+        if not entry:
+            return None
+        
+        result = {
+            "category": entry.get("category"),
+            "common_causes": entry.get("common_causes", []),
+            "self_care": entry.get("self_care", []),
+            "red_flags": entry.get("red_flags", []),
+            "disclaimer": entry.get("disclaimer", "")
+        }
+        
+        # Override with Hindi translations if requested
+        if language == "hi":
+            hi = entry.get("hi") or {}
+            if "self_care" in hi:
+                result["self_care"] = hi["self_care"]
+            if "red_flags" in hi:
+                result["red_flags"] = hi["red_flags"]
+            if "disclaimer" in hi:
+                result["disclaimer"] = hi["disclaimer"]
+        
+        return result
+    
+    def save_entry(self, key: str, entry_data: Dict) -> bool:
+        """Save or update KB entry with backup."""
+        # Create backup
+        backup_path = self.kb_path.with_suffix('.json.bak')
+        shutil.copy2(self.kb_path, backup_path)
+        
+        # Update data
+        self._data[key.lower().strip()] = entry_data
+        
+        # Save to file
+        return self._save()
+    
+    def delete_entry(self, key: str) -> bool:
+        """Delete KB entry with backup."""
+        key = key.lower().strip()
+        if key not in self._data:
+            return False
+        
+        # Create backup
+        backup_path = self.kb_path.with_suffix('.json.bak')
+        shutil.copy2(self.kb_path, backup_path)
+        
+        # Delete entry
+        del self._data[key]
+        
+        # Save to file
+        return self._save()
+\end{lstlisting}
+
+\subsection{Custom Rasa Action}
+
+\subsubsection{ActionProvideSymptomAdvice}
+
+\begin{lstlisting}[language=Python, caption=Symptom Advice Action]
+class ActionProvideSymptomAdvice(Action):
+    """Custom action to provide symptom-specific advice from knowledge base."""
+    
+    def name(self) -> Text:
+        return "action_provide_symptom_advice"
+    
+    def run(self, dispatcher, tracker, domain):
+        # Get slots
+        symptom = tracker.get_slot("symptom")
+        ailment = tracker.get_slot("ailment")
+        
+        # Get language from slot or metadata
+        lang = tracker.get_slot("language") or "en"
+        if lang not in ("en", "hi"):
+            lang = "en"
+        
+        # Fallback: get from metadata if slot not set
+        if lang == "en":
+            try:
+                metadata = tracker.latest_message.metadata or {}
+                meta_lang = metadata.get("preferred_language")
+                if meta_lang in ("en", "hi"):
+                    lang = meta_lang
+            except Exception:
+                pass
+        
+        # Normalize symptom to canonical KB key
+        raw_symptom = symptom or ailment
+        if not raw_symptom:
+            # Try to get from latest user message
+            latest_message = tracker.latest_message
+            if hasattr(latest_message, "text"):
+                raw_symptom = latest_message.text
+        
+        canonical_key = normalize_symptom(raw_symptom) if raw_symptom else None
+        
+        # Get advice from KB
+        if not canonical_key:
+            dispatcher.utter_message(
+                text="I'd like to help, but I need to know what symptom..."
+            )
+            return []
+        
+        advice = kb.get_advice(canonical_key, language=lang) if kb else None
+        
+        if advice:
+            # Build formatted response
+            response_parts = []
+            
+            # Self-care tips
+            if advice.get("self_care"):
+                header = "**स्व-देखभाल सुझाव:**" if lang == "hi" \
+                        else "**Self-Care Tips:**"
+                response_parts.append(header)
+                for i, tip in enumerate(advice["self_care"], 1):
+                    response_parts.append(f"{i}. {tip}")
+            
+            # Red flags
+            if advice.get("red_flags"):
+                response_parts.append("")
+                header = "**⚠️ चेतावनी - तुरंत डॉक्टर से संपर्क करें यदि:**" \
+                        if lang == "hi" \
+                        else "**⚠️ Red Flags - Seek Immediate Medical Attention If:**"
+                response_parts.append(header)
+                for i, flag in enumerate(advice["red_flags"], 1):
+                    response_parts.append(f"{i}. {flag}")
+            
+            # Disclaimer
+            response_parts.append("")
+            disclaimer = advice.get("disclaimer", "")
+            if disclaimer:
+                response_parts.append(disclaimer)
+            
+            dispatcher.utter_message(text="\n".join(response_parts))
+        else:
+            # No advice found
+            dispatcher.utter_message(
+                text=f"I don't have specific information about '{raw_symptom}'..."
+            )
+        
+        return []
+\end{lstlisting}
+
+\subsection{Symptom Normalization}
+
+\subsubsection{Normalization Function}
+
+\begin{lstlisting}[language=Python, caption=Symptom Normalization Implementation]
+def normalize_symptom(raw: Optional[str]) -> Optional[str]:
+    """Normalize a raw symptom string to a canonical KB key."""
+    if not raw:
+        return None
+    
+    text = raw.lower().strip()
+    
+    # Remove extra punctuation but preserve Unicode characters
+    text = re.sub(r"[^\w\s]", "", text, flags=re.UNICODE)
+    
+    # Mapping of natural language to canonical KB keys
+    mappings = {
+        "headache": [
+            "headache", "head hurts", "my head hurts",
+            "सिरदर्द", "सरदर्द", "सर दर्द", "सिर में दर्द"
+        ],
+        "fever": [
+            "fever", "high temperature", "feeling feverish",
+            "बुखार", "तापमान", "ज्वर"
+        ],
+        "cold": [
+            "cold", "runny nose", "stuffy nose",
+            "ठंडा", "जुकाम", "नाक बह रही है"
+        ],
+        # ... more mappings
+    }
+    
+    # Try exact match
+    text_normalized = re.sub(r"\s+", " ", text).strip()
+    for canonical, variants in mappings.items():
+        for v in variants:
+            v_normalized = re.sub(r"\s+", " ", v.lower().strip())
+            if text_normalized == v_normalized:
+                return canonical
+    
+    # Try substring match
+    for canonical, variants in mappings.items():
+        for v in variants:
+            if v.lower() in text_normalized or text_normalized in v.lower():
+                return canonical
+    
+    # Fallback: check if text matches KB key directly
+    kb_keys = kb.list_all_keys() if kb else []
+    if text_normalized in [k.lower() for k in kb_keys]:
+        return text_normalized
+    
+    return text_normalized
+\end{lstlisting}
+
+\subsection{Enhanced NLU Training Data}
+
+\subsubsection{Training Data Structure}
+
+The NLU training data includes:
+
+\begin{itemize}
+    \item 15-20 English examples per intent
+    \item 5-8 Hindi examples per health-related intent
+    \item Proper entity annotations with brackets
+    \item Ambiguous examples for robust fallback handling
+    \item Synonyms defined in domain.yml
+\end{itemize}
+
+\subsubsection{Example Training Data}
+
+\begin{lstlisting}[language=YAML, caption=NLU Training Examples]
+- intent: ask_about_symptom
+  examples: |
+    - I have a [headache](symptom)
+    - My [head](body_part) hurts
+    - I'm experiencing [mild](severity) [fever](symptom) for [2 days](duration)
+    - मुझे [सिरदर्द](symptom) है
+    - मुझे [बुखार](symptom) है
+    - मेरे [पेट](body_part) में दर्द है
+    - मुझे [हल्का](severity) [बुखार](symptom) है
+    - मेरा सर दर्द कर रहा है [headache](symptom)
+    - नाक बह रही है, शायद [जुकाम](symptom) है
+\end{lstlisting}
+
+\subsection{Multilingual Support}
+
+\subsubsection{Language Detection Flow}
+
+\begin{enumerate}
+    \item User sets \texttt{preferred\_language} in profile (Module 1)
+    \item Flask route retrieves language from user profile
+    \item Language passed to Rasa via metadata
+    \item \texttt{ActionSetLanguage} action sets language slot
+    \item Conditional responses use language slot
+    \item KB lookup uses language parameter
+    \item Response generated in user's preferred language
+\end{enumerate}
+
+\subsubsection{Language-Aware Greetings}
+
+\begin{lstlisting}[language=YAML, caption=Conditional Greetings in Domain]
+responses:
+  utter_greet:
+    - text: "Hello! I'm your Global Wellness Assistant..."
+      condition:
+        - type: slot
+          name: language
+          value: "en"
+    - text: "नमस्ते! मैं आपका ग्लोबल वेलनेस असिस्टेंट हूँ..."
+      condition:
+        - type: slot
+          name: language
+          value: "hi"
+\end{lstlisting}
+
+\subsubsection{ActionSetLanguage}
+
+\begin{lstlisting}[language=Python, caption=Language Setting Action]
+class ActionSetLanguage(Action):
+    """Set language slot from metadata."""
+    
+    def name(self) -> Text:
+        return "action_set_language"
+    
+    def run(self, dispatcher, tracker, domain):
+        lang = "en"  # default
+        
+        # Try metadata first
+        try:
+            metadata = tracker.latest_message.metadata or {}
+            meta_lang = metadata.get("preferred_language")
+            if meta_lang in ("en", "hi"):
+                lang = meta_lang
+            else:
+                # Fallback to slot value
+                slot_lang = tracker.get_slot("language")
+                if slot_lang in ("en", "hi"):
+                    lang = slot_lang
+        except Exception:
+            pass
+        
+        return [SlotSet("language", lang)]
+\end{lstlisting}
+
+\section{Module 4: Admin Dashboard \& System Refinement}
+
+\subsection{Overview}
+
+Module 4 adds comprehensive administrative functionality for managing the wellness assistant system, including knowledge base management, user feedback review, conversation analytics, and system monitoring.
+
+\subsection{Database Extensions}
+
+\subsubsection{ConversationLog Model}
+
+\begin{lstlisting}[language=Python, caption=ConversationLog Model]
+class ConversationLog(db.Model):
+    __tablename__ = 'conversation_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), 
+                        nullable=True, index=True)
+    session_id = db.Column(db.String(255), nullable=False, index=True)
+    user_message = db.Column(db.Text, nullable=False)
+    bot_response = db.Column(db.Text, nullable=False)
+    intent = db.Column(db.String(100), nullable=True)
+    symptom = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, 
+                          nullable=False, index=True)
+    
+    user = db.relationship('User', backref='conversation_logs', lazy=True)
+    
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'session_id': self.session_id,
+            'user_message': self.user_message,
+            'bot_response': self.bot_response,
+            'intent': self.intent,
+            'symptom': self.symptom,
+            'created_at': self.created_at.isoformat() 
+                         if self.created_at else None
+        }
+\end{lstlisting}
+
+\subsubsection{Feedback Model}
+
+\begin{lstlisting}[language=Python, caption=Feedback Model]
+class Feedback(db.Model):
+    __tablename__ = 'feedback'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), 
+                        nullable=True, index=True)
+    session_id = db.Column(db.String(255), nullable=False, index=True)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5
+    comment = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, 
+                          nullable=False, index=True)
+    
+    user = db.relationship('User', backref='feedback_entries', lazy=True)
+    
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'session_id': self.session_id,
+            'rating': self.rating,
+            'comment': self.comment,
+            'created_at': self.created_at.isoformat() 
+                         if self.created_at else None
+        }
+\end{lstlisting}
+
+\subsection{Admin Access Control}
+
+\subsubsection{Admin Required Decorator}
+
+\begin{lstlisting}[language=Python, caption=Admin Access Control]
+def admin_required(f):
+    """Decorator to require admin access."""
+    @wraps(f)
+    @jwt_required()
+    def decorated_function(*args, **kwargs):
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({"error": "Authentication required"}), 401
+        
+        user = User.query.get(int(current_user_id))
+        if not user or not user.is_admin:
+            return jsonify({"error": "Admin access required"}), 403
+        
+        return f(*args, **kwargs)
+    return decorated_function
+\end{lstlisting}
+
+\subsection{Admin Routes}
+
+\subsubsection{Dashboard Routes}
+
+\textbf{GET /admin/dashboard}
+\begin{itemize}
+    \item Renders admin dashboard with statistics and charts
+    \item Requires admin authentication
+    \item Displays summary cards and analytics
+\end{itemize}
+
+\textbf{GET /admin/api/stats/summary}
+\begin{itemize}
+    \item Returns summary statistics:
+    \begin{lstlisting}[language=JSON]
+{
+  "total_conversations": 150,
+  "total_feedback": 45,
+  "average_rating": 4.2,
+  "distinct_symptoms": 8
+}
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{GET /admin/api/stats/conversations\_by\_day?days=30}
+\begin{itemize}
+    \item Returns time series data for conversations
+    \item Used for line chart visualization
+\end{itemize}
+
+\textbf{GET /admin/api/stats/top\_symptoms?limit=5}
+\begin{itemize}
+    \item Returns most frequently mentioned symptoms
+    \item Used for bar chart visualization
+\end{itemize}
+
+\subsubsection{Knowledge Base Management Routes}
+
+\textbf{GET /admin/kb}
+\begin{itemize}
+    \item Lists all KB entries in a table
+    \item Provides edit and delete actions
+\end{itemize}
+
+\textbf{GET /admin/kb/create}
+\begin{itemize}
+    \item Renders form for creating new KB entry
+\end{itemize}
+
+\textbf{POST /admin/kb/create}
+\begin{itemize}
+    \item Creates new KB entry
+    \item Validates input data
+    \item Creates backup before saving
+\end{itemize}
+
+\textbf{GET /admin/kb/<key>/edit}
+\begin{itemize}
+    \item Renders form for editing existing KB entry
+\end{itemize}
+
+\textbf{POST /admin/kb/<key>/edit}
+\begin{itemize}
+    \item Updates existing KB entry
+    \item Creates backup before saving
+\end{itemize}
+
+\textbf{POST /admin/kb/<key>/delete}
+\begin{itemize}
+    \item Deletes KB entry
+    \item Creates backup before deletion
+    \item Requires confirmation
+\end{itemize}
+
+\subsubsection{Feedback Management Routes}
+
+\textbf{GET /admin/feedback}
+\begin{itemize}
+    \item Lists all feedback entries
+    \item Displays rating, comment, user info, and timestamp
+    \item Supports pagination (optional)
+\end{itemize}
+
+\subsection{Analytics Services}
+
+\subsubsection{Summary Statistics}
+
+\begin{lstlisting}[language=Python, caption=Summary Statistics Function]
+def get_summary_stats() -> Dict[str, Any]:
+    """Get overall system statistics."""
+    total_conversations = db.session.query(
+        func.count(ConversationLog.id)
+    ).scalar() or 0
+    
+    total_feedback = db.session.query(
+        func.count(Feedback.id)
+    ).scalar() or 0
+    
+    avg_rating = db.session.query(
+        func.avg(Feedback.rating)
+    ).scalar()
+    avg_rating = round(float(avg_rating), 2) if avg_rating else 0.0
+    
+    distinct_symptoms = db.session.query(
+        func.count(func.distinct(ConversationLog.symptom))
+    ).filter(
+        ConversationLog.symptom.isnot(None)
+    ).scalar() or 0
+    
+    return {
+        "total_conversations": total_conversations,
+        "total_feedback": total_feedback,
+        "average_rating": avg_rating,
+        "distinct_symptoms": distinct_symptoms
+    }
+\end{lstlisting}
+
+\subsubsection{Conversations by Day}
+
+\begin{lstlisting}[language=Python, caption=Conversations Time Series]
+def get_conversations_by_day(days: int = 30) -> List[Dict[str, Any]]:
+    """Get daily conversation counts for the last N days."""
+    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    
+    # SQLite-compatible date extraction
+    db_type = db.engine.dialect.name
+    if db_type == 'sqlite':
+        date_expr = func.strftime('%Y-%m-%d', ConversationLog.created_at)
+    else:
+        date_expr = func.date(ConversationLog.created_at)
+    
+    results = db.session.query(
+        date_expr.label('date'),
+        func.count(ConversationLog.id).label('count')
+    ).filter(
+        ConversationLog.created_at >= cutoff_date
+    ).group_by(
+        date_expr
+    ).order_by(
+        date_expr
+    ).all()
+    
+    return [
+        {'date': result.date, 'count': result.count}
+        for result in results
+    ]
+\end{lstlisting}
+
+\subsubsection{Top Symptoms}
+
+\begin{lstlisting}[language=Python, caption=Top Symptoms Analysis]
+def get_top_symptoms(limit: int = 5) -> List[Dict[str, Any]]:
+    """Get most frequently mentioned symptoms."""
+    results = db.session.query(
+        ConversationLog.symptom,
+        func.count(ConversationLog.id).label('count')
+    ).filter(
+        ConversationLog.symptom.isnot(None)
+    ).group_by(
+        ConversationLog.symptom
+    ).order_by(
+        func.count(ConversationLog.id).desc()
+    ).limit(limit).all()
+    
+    return [
+        {'symptom': result.symptom, 'count': result.count}
+        for result in results
+    ]
+\end{lstlisting}
+
+\subsection{Conversation Logging}
+
+\subsubsection{Logging Implementation}
+
+All user-bot interactions are automatically logged in the \texttt{api\_message} endpoint:
+
+\begin{lstlisting}[language=Python, caption=Conversation Logging]
+@conversation_bp.route('/api/message', methods=['POST'])
+def api_message():
+    # ... message processing ...
+    
+    # Extract symptom for logging
+    symptom = None
+    message_lower = message.lower()
+    symptom_keywords = {
+        'headache': ['headache', 'head hurts', 'सिरदर्द'],
+        'fever': ['fever', 'temperature', 'बुखार'],
+        # ... more mappings
+    }
+    
+    for symptom_key, keywords in symptom_keywords.items():
+        if any(keyword in message_lower for keyword in keywords):
+            symptom = symptom_key
+            break
+    
+    # Log conversation
+    try:
+        conversation_log = ConversationLog(
+            user_id=user_id,
+            session_id=session_id,
+            user_message=message,
+            bot_response=bot_response_text,
+            intent=intent,
+            symptom=symptom
+        )
+        db.session.add(conversation_log)
+        db.session.commit()
+        logged = True
+    except Exception as e:
+        logger.error(f"Error logging conversation: {e}")
+        db.session.rollback()
+        logged = False
+    
+    return jsonify({
+        "session_id": session_id,
+        "messages": bot_messages,
+        "logged": logged
+    }), 200
+\end{lstlisting}
+
+\subsection{User Feedback Collection}
+
+\subsubsection{Feedback API}
+
+\textbf{POST /conversation/api/feedback}
+\begin{itemize}
+    \item \textbf{Request Body}:
+    \begin{lstlisting}[language=JSON]
+{
+  "session_id": "uuid-string",
+  "rating": 4,
+  "comment": "Very helpful response!"
+}
+    \end{lstlisting}
+    \item \textbf{Validation}:
+    \begin{itemize}
+        \item session\_id: Required, non-empty string
+        \item rating: Required, integer between 1-5
+        \item comment: Optional, can be null or empty
+    \end{itemize}
+    \item \textbf{Response (201)}:
+    \begin{lstlisting}[language=JSON]
+{
+  "success": true,
+  "message": "Thank you for your feedback!"
+}
+    \end{lstlisting}
+\end{itemize}
+
+\subsubsection{Frontend Feedback UI}
+
+The chat interface includes interactive feedback components:
+
+\begin{lstlisting}[language=JavaScript, caption=Feedback UI Implementation]
+function createFeedbackUI(messageDiv) {
+    const feedbackDiv = document.createElement('div');
+    feedbackDiv.className = 'feedback-ui mt-2';
+    
+    // Rating buttons (1-5)
+    const feedbackButtons = document.createElement('div');
+    for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-outline-primary feedback-rating';
+        btn.textContent = i;
+        btn.dataset.rating = i;
+        btn.onclick = () => {
+            // Select rating
+            feedbackDiv.querySelectorAll('.feedback-rating')
+                .forEach(b => b.classList.remove('active', 'btn-primary'));
+            btn.classList.add('active', 'btn-primary');
+        };
+        feedbackButtons.appendChild(btn);
+    }
+    
+    // Submit Feedback button
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = 'Submit Feedback';
+    submitBtn.onclick = async () => {
+        const ratingBtn = feedbackDiv.querySelector('.feedback-rating.active');
+        if (!ratingBtn) {
+            showError('Please select a rating first.');
+            return;
+        }
+        const rating = parseInt(ratingBtn.dataset.rating);
+        await handleFeedback(rating, messageDiv, '');
+    };
+    feedbackButtons.appendChild(submitBtn);
+    
+    // Add Comment button
+    const addCommentBtn = document.createElement('button');
+    addCommentBtn.textContent = 'Add Comment';
+    addCommentBtn.onclick = () => {
+        // Toggle comment textarea
+    };
+    feedbackButtons.appendChild(addCommentBtn);
+    
+    feedbackDiv.appendChild(feedbackButtons);
+    return feedbackDiv;
+}
+\end{lstlisting}
+
+\subsection{Admin Dashboard UI}
+
+\subsubsection{Dashboard Components}
+
+The admin dashboard includes:
+
+\begin{itemize}
+    \item \textbf{Summary Cards}: Display key metrics (conversations, feedback, ratings, symptoms)
+    \item \textbf{Conversations Chart}: Line chart showing conversation volume over time
+    \item \textbf{Symptoms Chart}: Bar chart displaying top symptoms
+    \item \textbf{Quick Links}: Navigation to KB management and feedback review
+\end{itemize}
+
+\subsubsection{Chart Implementation}
+
+\begin{lstlisting}[language=JavaScript, caption=Chart.js Implementation]
+function initConversationsChart() {
+    const ctx = document.getElementById('conversationsChart');
+    if (!ctx) return;
+    
+    fetchWithAuth('/admin/api/stats/conversations_by_day?days=30')
+        .then(data => {
+            if (!data || data.length === 0) {
+                ctx.parentElement.innerHTML = 
+                    '<p>No conversation data available yet.</p>';
+                return;
+            }
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'Conversations',
+                        data: data.map(d => d.count),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading chart data:', error);
+        });
+}
+\end{lstlisting}
+
+\section{System Integration \& Workflows}
+
+\subsection{User Journey}
+
+The complete user journey through the system:
+
+\begin{enumerate}
+    \item \textbf{Registration/Login}: User creates account or logs in (Module 1)
+    \item \textbf{Profile Setup}: User sets language preference and age group
+    \item \textbf{Chat Access}: User navigates to chat interface
+    \item \textbf{Message Sending}: User sends message in preferred language
+    \item \textbf{Language Detection}: Flask retrieves user's language preference
+    \item \textbf{Rasa Processing}: Message forwarded to Rasa with language metadata
+    \item \textbf{Intent Recognition}: Rasa identifies intent and extracts entities
+    \item \textbf{Language Setting}: ActionSetLanguage sets language slot
+    \item \textbf{KB Lookup}: Custom action queries knowledge base
+    \item \textbf{Response Generation}: Formatted response in user's language
+    \item \textbf{Conversation Logging}: Interaction logged to database
+    \item \textbf{Feedback Collection}: User provides rating/comment
+    \item \textbf{Admin Review}: Admin reviews analytics and feedback
+\end{enumerate}
+
+\subsection{Language Handling Flow}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+User Profile (preferred_language: "hi")
+    │
+    ▼
+Flask Route (get_user_language())
+    │
+    ▼
+Rasa Client (send_message with metadata)
+    │
+    ▼
+Rasa Server (receives metadata)
+    │
+    ▼
+ActionSetLanguage (sets language slot)
+    │
+    ▼
+Conditional Responses (utter_greet with language condition)
+    │
+    ▼
+ActionProvideSymptomAdvice (reads language slot)
+    │
+    ▼
+KB Lookup (get_advice(key, language="hi"))
+    │
+    ▼
+Hindi Response Generated
+\end{verbatim}
+\caption{Language Preference Flow}
+\end{figure}
+
+\subsection{Session Management}
+
+\subsubsection{Session ID Generation}
+
+\begin{lstlisting}[language=Python, caption=Session ID Handling]
+@conversation_bp.route('/api/message', methods=['POST'])
+def api_message():
+    data = request.get_json()
+    message = data.get('message', '').strip()
+    session_id = data.get('session_id', '').strip()
+    
+    # Generate session ID if not provided
+    if not session_id:
+        session_id = str(uuid.uuid4())
+    
+    # Use session_id as sender_id for Rasa
+    sender_id = session_id
+    
+    # ... process message ...
+    
+    return jsonify({
+        "session_id": session_id,
+        "messages": bot_messages,
+        "logged": logged
+    }), 200
+\end{lstlisting}
+
+\subsubsection{Frontend Session Storage}
+
+\begin{lstlisting}[language=JavaScript, caption=Session Management in Frontend]
+// Store session ID in localStorage
+let sessionId = localStorage.getItem('chat_session_id') || '';
+
+async function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
+    
+    try {
+        const response = await fetch('/conversation/api/message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: message,
+                session_id: sessionId
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Update session ID from response
+        if (data.session_id) {
+            sessionId = data.session_id;
+            localStorage.setItem('chat_session_id', sessionId);
+        }
+        
+        // Display bot response
+        addMessage(data.messages[0].text, 'bot');
+    } catch (error) {
+        console.error('Error sending message:', error);
+        showError('Failed to send message. Please try again.');
+    }
+}
+\end{lstlisting}
+
+\section{Testing \& Quality Assurance}
+
+\subsection{Test Coverage}
+
+The system includes comprehensive test suites covering all modules:
+
+\subsubsection{Module 1 Tests}
+
+\textbf{test\_auth\_api.py}
+\begin{itemize}
+    \item User registration with valid/invalid data
+    \item Login with correct/incorrect credentials
+    \item JWT token generation and validation
+    \item Profile retrieval and updates
+    \item Input validation tests
+\end{itemize}
+
+\subsubsection{Module 2 Tests}
+
+\textbf{test\_conversation\_api.py}
+\begin{itemize}
+    \item Chat message API endpoint
+    \item Rasa integration and error handling
+    \item Session ID generation and management
+    \item Fallback message handling
+\end{itemize}
+
+\subsubsection{Module 3 Tests}
+
+\textbf{test\_kb\_service.py}
+\begin{itemize}
+    \item Knowledge base entry retrieval
+    \item Language-specific advice retrieval
+    \item KB search functionality
+    \item Entry creation and deletion
+\end{itemize}
+
+\subsubsection{Module 4 Tests}
+
+\textbf{test\_admin\_views.py}
+\begin{itemize}
+    \item Admin access control (403 for non-admins)
+    \item KB management (create, edit, delete)
+    \item Feedback submission and validation
+    \item Analytics API endpoints
+    \item Conversation logging
+\end{itemize}
+
+\subsection{Test Execution}
+
+\begin{lstlisting}[language=bash, caption=Running Tests]
+# Run all tests
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_auth_api.py -v
+
+# Run with coverage report
+pytest tests/ --cov=. --cov-report=html
+
+# Run specific test
+pytest tests/test_auth_api.py::test_register_user -v
+\end{lstlisting}
+
+\subsection{Test Examples}
+
+\subsubsection{Authentication Test}
+
+\begin{lstlisting}[language=Python, caption=Authentication Test Example]
+def test_register_user(client):
+    """Test user registration."""
+    response = client.post('/auth/api/register',
+        json={
+            'email': 'test@example.com',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'name': 'Test User',
+            'age_group': '26-35',
+            'preferred_language': 'en'
+        }
+    )
+    assert response.status_code == 201
+    data = response.get_json()
+    assert data['message'] == 'User registered successfully'
+    assert 'user' in data
+    assert data['user']['email'] == 'test@example.com'
+\end{lstlisting}
+
+\subsubsection{Admin Access Test}
+
+\begin{lstlisting}[language=Python, caption=Admin Access Test]
+def test_admin_dashboard_requires_admin(client, admin_token):
+    """Test that admin dashboard requires admin access."""
+    headers = {'Authorization': f'Bearer {admin_token}'}
+    response = client.get('/admin/dashboard', headers=headers)
+    assert response.status_code == 200
+
+def test_admin_dashboard_blocks_non_admin(client, user_token):
+    """Test that non-admin users are blocked."""
+    headers = {'Authorization': f'Bearer {user_token}'}
+    response = client.get('/admin/dashboard', headers=headers)
+    assert response.status_code == 403
+\end{lstlisting}
+
+\section{Deployment \& Security}
+
+\subsection{Production Checklist}
+
+\begin{itemize}
+    \item \textbf{Environment Variables}: Use strong, unique values for SECRET\_KEY and JWT\_SECRET\_KEY
+    \item \textbf{HTTPS}: Enable HTTPS for all communications
+    \item \textbf{Database}: Use PostgreSQL or MySQL instead of SQLite
+    \item \textbf{Token Security}: Implement token blacklisting for logout
+    \item \textbf{Logging}: Set up proper logging and monitoring
+    \item \textbf{CORS}: Configure CORS appropriately for production domains
+    \item \textbf{Rate Limiting}: Implement rate limiting for API endpoints
+    \item \textbf{Backup}: Set up automated backups for database and KB
+    \item \textbf{Session Management}: Use httpOnly cookies for token storage
+    \item \textbf{Error Handling}: Sanitize error messages to prevent information leakage
+\end{itemize}
+
+\subsection{Security Best Practices}
+
+\subsubsection{Password Security}
+
+\begin{itemize}
+    \item Passwords hashed with PBKDF2-SHA256 and salt
+    \item Minimum 8 characters required
+    \item Consider implementing password complexity requirements
+    \item Never log or display passwords
+\end{itemize}
+
+\subsubsection{JWT Security}
+
+\begin{itemize}
+    \item Tokens signed with HMAC-SHA256
+    \item Configurable expiration (recommended: 24 hours)
+    \item Consider implementing refresh tokens
+    \item Token blacklisting for logout (optional)
+    \item Secure token storage (httpOnly cookies recommended)
+\end{itemize}
+
+\subsubsection{Input Validation}
+
+\begin{itemize}
+    \item All user inputs validated
+    \item SQL injection prevention via ORM
+    \item XSS prevention in templates
+    \item CSRF protection (consider Flask-WTF)
+    \item File upload validation (if implemented)
+\end{itemize}
+
+\subsubsection{Access Control}
+
+\begin{itemize}
+    \item Admin routes protected with decorator
+    \item JWT required for protected endpoints
+    \item Role-based access control (admin vs regular user)
+    \item Session validation on each request
+\end{itemize}
+
+\subsection{Performance Optimization}
+
+\begin{itemize}
+    \item Database indexes on frequently queried fields
+    \item Connection pooling for database
+    \item Caching for KB lookups (optional)
+    \item CDN for static assets
+    \item Gzip compression for responses
+    \item Database query optimization
+\end{itemize}
+
+\section{Future Enhancements}
+
+\subsection{Planned Features}
+
+\begin{itemize}
+    \item \textbf{External API Integration}: Connect with health APIs for real-time data
+    \item \textbf{Advanced NLU}: Implement transformer models (BERT, multilingual BERT)
+    \item \textbf{Conversation History}: Store and retrieve conversation history
+    \item \textbf{Personalization}: Recommendations based on user profile and history
+    \item \textbf{Multi-turn Forms}: Advanced symptom assessment with forms
+    \item \textbf{Export Functionality}: Export logs and analytics to CSV/JSON
+    \item \textbf{Sentiment Analysis}: Analyze user feedback sentiment
+    \item \textbf{A/B Testing}: Test different response variations
+    \item \textbf{Telemedicine Integration}: Connect with telemedicine platforms
+    \item \textbf{Mobile App}: Native mobile applications
+    \item \textbf{Voice Interface}: Voice input/output support
+    \item \textbf{Multi-language Expansion}: Support for more languages
+\end{itemize}
+
+\subsection{Technical Improvements}
+
+\begin{itemize}
+    \item Migrate to PostgreSQL for production
+    \item Implement Redis for session management
+    \item Add comprehensive API documentation (Swagger/OpenAPI)
+    \item Implement WebSocket for real-time updates
+    \item Add unit tests for all components
+    \item Implement CI/CD pipeline
+    \item Add monitoring and alerting
+    \item Performance profiling and optimization
+\end{itemize}
+
+\section{Conclusion}
+
+The Global Wellness Assistant represents a complete, production-ready health chatbot system that successfully integrates modern web technologies with advanced conversational AI capabilities. The four-module architecture provides a solid foundation for delivering accessible, multilingual health information to users.
+
+Key achievements of the system include:
+
+\begin{itemize}
+    \item Secure, scalable user authentication and management
+    \item Robust conversational AI with Rasa 3.x
+    \item Comprehensive multilingual support (English/Hindi)
+    \item Structured, maintainable health knowledge base
+    \item Full-featured administrative dashboard
+    \item Comprehensive conversation logging and analytics
+    \item User feedback collection and review
+    \item Production-ready security and error handling
+\end{itemize}
+
+The modular design allows for incremental development and easy maintenance. The system is designed with scalability, security, and maintainability in mind, making it suitable for production deployment with appropriate infrastructure and security measures.
+
+The integration of Flask, Rasa, and modern web technologies demonstrates a practical approach to building intelligent, user-friendly health information systems. The system's architecture provides a solid foundation for future enhancements and expansions.
+
+\section*{Appendix A: API Reference Summary}
+
+\subsection*{Authentication Endpoints}
+\begin{itemize}
+    \item POST /auth/api/register - Register new user
+    \item POST /auth/api/login - Authenticate user
+    \item POST /auth/api/logout - Logout user
+    \item GET /auth/api/me - Get current user
+\end{itemize}
+
+\subsection*{Profile Endpoints}
+\begin{itemize}
+    \item GET /profile/api/me - Get profile
+    \item PUT /profile/api/me - Update profile
+\end{itemize}
+
+\subsection*{Conversation Endpoints}
+\begin{itemize}
+    \item GET /conversation/chat - Chat interface
+    \item POST /conversation/api/message - Send message
+    \item POST /conversation/api/feedback - Submit feedback
+\end{itemize}
+
+\subsection*{Admin Endpoints}
+\begin{itemize}
+    \item GET /admin/dashboard - Admin dashboard
+    \item GET /admin/kb - KB list
+    \item GET/POST /admin/kb/create - Create KB entry
+    \item GET/POST /admin/kb/<key>/edit - Edit KB entry
+    \item POST /admin/kb/<key>/delete - Delete KB entry
+    \item GET /admin/feedback - Feedback list
+    \item GET /admin/api/stats/summary - Summary statistics
+    \item GET /admin/api/stats/conversations\_by\_day - Conversations chart data
+    \item GET /admin/api/stats/top\_symptoms - Top symptoms data
+\end{itemize}
+
+\section*{Appendix B: Database Schema}
+
+\begin{verbatim}
+users
+  - id (INTEGER PRIMARY KEY)
+  - email (STRING UNIQUE)
+  - password_hash (STRING)
+  - name (STRING)
+  - age_group (STRING)
+  - preferred_language (STRING, default='en')
+  - is_admin (BOOLEAN, default=False)
+  - created_at (DATETIME)
+  - updated_at (DATETIME)
+
+conversation_logs
+  - id (INTEGER PRIMARY KEY)
+  - user_id (INTEGER FOREIGN KEY)
+  - session_id (STRING INDEXED)
+  - user_message (TEXT)
+  - bot_response (TEXT)
+  - intent (STRING)
+  - symptom (STRING)
+  - created_at (DATETIME INDEXED)
+
+feedback
+  - id (INTEGER PRIMARY KEY)
+  - user_id (INTEGER FOREIGN KEY)
+  - session_id (STRING INDEXED)
+  - rating (INTEGER)
+  - comment (TEXT)
+  - created_at (DATETIME INDEXED)
+\end{verbatim}
+
+\section*{Appendix C: Environment Variables}
+
+\begin{verbatim}
+# Flask Configuration
+FLASK_APP=app:create_app
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
+
+# JWT Configuration
+JWT_SECRET_KEY=your-jwt-secret-key-here
+JWT_ACCESS_TOKEN_EXPIRES=86400  # 24 hours
+
+# Database
+SQLALCHEMY_DATABASE_URI=sqlite:///wellness.db
+
+# Rasa Configuration
+RASA_BASE_URL=http://localhost:5005
+\end{verbatim}
+
+\begin{thebibliography}{9}
+
+\bibitem{rasa}
+Rasa Technologies. \textit{Rasa Open Source Documentation}. 
+\url{https://rasa.com/docs/rasa/}, 2024.
+
+\bibitem{flask}
+Pallets Projects. \textit{Flask Documentation}. 
+\url{https://flask.palletsprojects.com/}, 2024.
+
+\bibitem{jwt}
+JWT.io. \textit{JSON Web Tokens Introduction}. 
+\url{https://jwt.io/introduction/}, 2024.
+
+\bibitem{sqlalchemy}
+SQLAlchemy. \textit{SQLAlchemy Documentation}. 
+\url{https://www.sqlalchemy.org/}, 2024.
+
+\bibitem{bootstrap}
+Bootstrap Team. \textit{Bootstrap 5 Documentation}. 
+\url{https://getbootstrap.com/docs/5.0/}, 2024.
+
+\bibitem{chartjs}
+Chart.js. \textit{Chart.js Documentation}. 
+\url{https://www.chartjs.org/docs/latest/}, 2024.
+
+\bibitem{pytest}
+pytest Development Team. \textit{pytest Documentation}. 
+\url{https://docs.pytest.org/}, 2024.
+
+\bibitem{werkzeug}
+Pallets Projects. \textit{Werkzeug Documentation}. 
+\url{https://werkzeug.palletsprojects.com/}, 2024.
+
+\bibitem{rest}
+Fielding, Roy T. \textit{Architectural Styles and the Design of Network-based Software Architectures}. 
+University of California, Irvine, 2000.
+
+\end{thebibliography}
+
+\end{document}
+
