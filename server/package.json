@@ -1,0 +1,35 @@
+{
+    "name": "wellbot-server",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.js",
+        "start": "node server.js",
+        "seed": "node scripts/seed.js",
+        "test": "NODE_ENV=test jest"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.0",
+        "express": "^4.21.0",
+        "express-rate-limit": "^7.4.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.6.0",
+        "morgan": "^1.10.0",
+        "validator": "^13.12.0"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "nodemon": "^3.1.0",
+        "supertest": "^7.1.0"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "roots": [
+            "<rootDir>/tests"
+        ],
+        "transform": {}
+    }
+}

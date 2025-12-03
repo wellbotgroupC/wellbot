@@ -1,0 +1,783 @@
+/* ==============================
+   GLOBAL RESET + BASE STYLES
+=================================*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+/* ==============================
+   LAYOUT
+=================================*/
+.app-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Common page layout */
+.page-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* from top */
+    padding: 2rem;
+}
+
+/* ==============================
+   HEADER (NAVBAR)
+=================================*/
+.app-header {
+    background: #020617;
+    padding: 1rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+}
+
+nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #e2e8f0;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+nav a:hover {
+    color: #818cf8;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.header-right select {
+    background: #020617;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid #334155;
+}
+
+/* ==============================
+   FOOTER
+=================================*/
+.app-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+/* ==============================
+   CARDS (login/register/profile/admin)
+=================================*/
+.card {
+    background: white;
+    padding: 2.2rem;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.card h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ==============================
+   FORMS
+=================================*/
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+label {
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+/* inputs + selects look consistent */
+input,
+select {
+    margin-top: 0.4rem;
+    padding: 0.7rem 1rem;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    font-size: 0.9rem;
+    outline: none;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Make Age group / Language selects align nicely */
+.form label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form select {
+    width: 100%;
+    height: 46px;
+    background: #ffffff;
+}
+
+.card .form select {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+/* ==============================
+   BUTTONS
+=================================*/
+button {
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 0.9rem;
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(124, 58, 237, 0.4);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border-radius: 50px;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px dashed #6366f1;
+    color: #6366f1;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+}
+
+.btn-small {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    align-self: flex-end;
+}
+
+/* ==============================
+   TEXT
+=================================*/
+.error-text {
+    color: #dc2626;
+    font-size: 0.8rem;
+}
+
+.hint-text {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.link-inline {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+/* ==============================
+   PROFILE PAGE
+=================================*/
+.profile-details p {
+    margin: 0.6rem 0;
+    font-size: 0.95rem;
+}
+
+.profile-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ==============================
+   CHAT PAGE
+=================================*/
+
+.chat-page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem 3rem;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 1100px;
+    background: #020617;
+    border-radius: 32px;
+    padding: 2rem 2.5rem 1.8rem;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.8);
+    color: #e5e7eb;
+}
+
+.chat-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.chat-subtitle {
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+.chat-window {
+    margin-top: 1.5rem;
+    background: #020617;
+    border-radius: 24px;
+    padding: 1.3rem 1.2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Chat messages layout */
+.chat-message {
+    display: flex;
+    margin-bottom: 0.75rem;
+}
+
+.chat-message-bot {
+    justify-content: flex-start;
+}
+
+.chat-message-user {
+    justify-content: flex-end;
+}
+
+/* inner wrapper for bubble + feedback */
+.chat-message-inner {
+    max-width: min(80%, 640px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chat-message-user .chat-message-inner {
+    align-items: flex-end;
+}
+
+.chat-bubble {
+    background: #0f172a;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.chat-message-user .chat-bubble {
+    background: #5b21ff;
+}
+
+.chat-time {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* input row */
+.chat-input-row {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid #4c1d95;
+    background: #020617;
+    color: #e5e7eb;
+    padding: 0.9rem 1.2rem;
+    outline: none;
+}
+
+.chat-input::placeholder {
+    color: #64748b;
+}
+
+/* typing indicator */
+.typing-indicator {
+    display: inline-flex;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.typing-indicator .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    animation: typing 1s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes typing {
+
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+
+    40% {
+        transform: translateY(-3px);
+        opacity: 1;
+    }
+}
+
+/* ==============================
+   CHAT FEEDBACK (LIKE / DISLIKE + COMMENT)
+=================================*/
+
+.chat-feedback-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 0.15rem;
+    align-self: flex-start;
+    /* under bot bubble, left aligned */
+}
+
+.chat-message-user .chat-feedback-row {
+    align-self: flex-end;
+}
+
+.chat-feedback-label {
+    margin-right: 0.1rem;
+}
+
+.chat-feedback-btn {
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid transparent;
+    background: rgba(148, 163, 184, 0.15);
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.chat-feedback-btn.active-like {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.chat-feedback-btn.active-dislike {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.12);
+}
+
+.chat-feedback-comment-link {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #6366f1;
+    text-decoration: underline;
+}
+
+.chat-feedback-comment-form {
+    width: 100%;
+    margin-top: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.chat-feedback-comment-form textarea {
+    width: 100%;
+    border-radius: 0.6rem;
+    border: 1px solid #4b5563;
+    background: #020617;
+    color: #e5e7eb;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+    resize: vertical;
+}
+
+/* ==============================
+   ADMIN DASHBOARD – BASE
+=================================*/
+
+.admin-page {
+    align-items: flex-start;
+}
+
+.admin-dashboard {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.admin-header-left h1 {
+    font-size: 1.6rem;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.admin-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-top: 0.2rem;
+}
+
+.admin-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* KPI cards */
+.admin-kpi-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-kpi-card {
+    background: #020617;
+    color: #e5e7eb;
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+}
+
+.admin-kpi-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.admin-kpi-value {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.admin-kpi-list ul {
+    list-style: none;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.admin-kpi-list li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+}
+
+.admin-kpi-empty {
+    color: #9ca3af;
+}
+
+/* Filter card */
+.admin-filter-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+}
+
+.admin-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-filter-row {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-filter-item {
+    min-width: 160px;
+}
+
+.admin-filter-item label {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.admin-filter-item select {
+    margin-top: 0.25rem;
+}
+
+/* Main grid */
+.admin-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+}
+
+.admin-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.admin-chip {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 0.75rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+}
+
+/* Table */
+.admin-table-wrapper {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.45rem 0.4rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.admin-empty-cell {
+    text-align: center;
+    padding: 0.8rem 0;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+/* Logs list */
+.admin-log-list {
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 0.3rem;
+}
+
+.admin-log-item {
+    border-radius: 0.9rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.6rem 0.7rem;
+    margin-bottom: 0.6rem;
+}
+
+.admin-log-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+}
+
+.admin-log-user {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.admin-log-duration {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.admin-log-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+.admin-log-messages {
+    list-style: none;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+}
+
+.admin-log-messages li {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.2rem;
+}
+
+.admin-role-tag {
+    font-size: 0.7rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.admin-role-user {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.admin-role-bot {
+    background: #ecfdf3;
+    color: #15803d;
+}
+
+.admin-more {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* Small pill */
+.admin-pill {
+    background: rgba(148, 163, 184, 0.15);
+    color: #e5e7eb;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+}
+
+/* ==============================
+   RESPONSIVE
+=================================*/
+@media (max-width: 768px) {
+    .app-header {
+        padding: 0.8rem 1.2rem;
+    }
+
+    nav {
+        gap: 0.8rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .chat-container {
+        padding: 1.6rem 1.4rem 1.4rem;
+    }
+
+    .admin-kpi-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-header {
+        flex-direction: column;
+    }
+
+    .admin-header-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* Wider layout: multi-column admin */
+@media (min-width: 1024px) {
+    .admin-kpi-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-main-grid {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+    }
+}

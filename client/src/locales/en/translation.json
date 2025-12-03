@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "login": "Login",
+        "register": "Register",
+        "admin": "Admin",
+        "logout": "Logout"
+    },
+    "footer": {
+        "disclaimer": "WellBot is for educational purposes only and does not replace professional medical advice. Always consult a doctor for serious issues."
+    },
+    "login": {
+        "title": "Welcome back",
+        "email": "Email",
+        "password": "Password",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "Your password",
+        "button": "Login",
+        "newUser": "New user?",
+        "registerLink": "Register here"
+    },
+    "register": {
+        "title": "Create your WellBot account",
+        "name": "Name",
+        "ageGroup": "Age group",
+        "language": "Preferred language",
+        "email": "Email",
+        "password": "Password",
+        "button": "Register",
+        "age": {
+            "child": "Child (0-17)",
+            "young": "Young Adult (18-35)",
+            "adult": "Adult (36-60)",
+            "senior": "Senior (60+)"
+        }
+    },
+    "profile": {
+        "title": "Your Profile",
+        "name": "Name",
+        "email": "Email",
+        "ageGroup": "Age group",
+        "language": "Language",
+        "loginAgain": "Login again",
+        "logoutDelete": "Logout (Delete account)",
+        "chatButton": "Open Chat",
+        "confirmDelete": "This will permanently delete your account and chat history. Continue?"
+    },
+    "chat": {
+        "title": "WellBot – Wellness Guide",
+        "subtitle": "Share your general health or diet questions. This is not a real doctor.",
+        "placeholder": "Type your question here...",
+        "send": "Send",
+        "error": "Sorry, something went wrong. Please try again or contact a real doctor."
+    },
+    "admin": {
+        "loginTitle": "Admin Login",
+        "loginButton": "Login as Admin",
+        "dashboardTitle": "Admin Dashboard",
+        "totalUsers": "Total Users",
+        "avgSession": "Average Session Time",
+        "topQuestions": "Top 10 Questions",
+        "filters": "Filters",
+        "ageAll": "All Age Groups",
+        "langAll": "All Languages",
+        "refresh": "Refresh",
+        "exportUsers": "Export Users CSV",
+        "exportChats": "Export Chats CSV",
+        "usersList": "Users",
+        "chatLogs": "Chat Logs",
+        "session": "Session:",
+        "inProgress": "In progress",
+        "moreMessages": "and {{count}} more messages..."
+    }
+}
